@@ -11,3 +11,4 @@ def q_rsqrt(number: float) -> float:
 
     y_val = y.value
     return y_val * (threehalfs - (x2 * y_val * y_val))
+	y=10
