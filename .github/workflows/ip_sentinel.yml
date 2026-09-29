@@ -1,0 +1,37 @@
+name: IP Sentinel Audit Check
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  audit-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          
+      - name: Fetch Sentinel Engine
+        uses: actions/checkout@v4
+        with:
+          repository: YOUR_GITHUB_USERNAME/sentinel-engine
+          path: sentinel-engine
+          
+      - name: Install Dependencies
+        run: |
+          pip install hindsight-client openai PyGithub python-dotenv
+          
+      - name: Run Sentinel Audit
+        env:
+          HINDSIGHT_API_KEY: ${{ secrets.HINDSIGHT_API_KEY }}
+          HINDSIGHT_BASE_URL: https://api.hindsight.vectorize.io
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HINDSIGHT_BANK_ID: enterprise-ip-sentinel
+        run: |
+          cd sentinel-engine
+          python run_check.py ${{ github.repository }} ${{ github.event.pull_request.number }}
